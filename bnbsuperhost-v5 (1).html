@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BnbSuperhosts — Find Your Perfect Stay</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#6abf4b;--g-dark:#4a9a2e;--g-deep:#2e6b18;
+  --g-light:#a8d98f;--g-pale:#eaf6e3;
+  --charcoal:#18201a;--charcoal2:#2c3a2e;
+  --cream:#f6faf4;
+  --gray:#6b7a63;--gray-light:#d4e0cc;--gray-mid:#a0b096;
+  --shadow:0 8px 40px rgba(24,32,26,.11);
+  --shadow-g:0 8px 32px rgba(106,191,75,.22);
+  --r:16px;--r-lg:24px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--g-light);border-radius:3px;}
+.page{display:none;}.page.active{display:block;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  padding:13px 40px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:rgba(246,250,244,.97);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--gray-light);transition:padding .3s;
+}
+nav.scrolled{padding:9px 40px;box-shadow:0 2px 18px rgba(24,32,26,.07);}
+.logo{display:flex;align-items:center;gap:9px;font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:var(--charcoal);text-decoration:none;cursor:pointer;flex-shrink:0;}
+.logo-icon{width:32px;height:32px;background:var(--g);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:var(--shadow-g);}
+.logo-text{white-space:nowrap;} .logo-text .gr{color:var(--g);}
+
+.nav-links{display:flex;align-items:center;gap:22px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--gray);font-size:.875rem;font-weight:500;cursor:pointer;transition:color .2s;white-space:nowrap;}
+.nav-links a:hover{color:var(--charcoal);}
+.nav-host-btn{border:1.5px solid var(--g);color:var(--g-dark)!important;padding:8px 18px;border-radius:50px;font-weight:600!important;transition:all .2s!important;}
+.nav-host-btn:hover{background:var(--g-pale)!important;}
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{width:21px;height:2px;background:var(--charcoal);border-radius:2px;display:block;}
+
+/* ── SEARCH STRIP ── */
+.search-strip{
+  padding:72px 40px 20px;
+  background:white;
+  border-bottom:1px solid var(--gray-light);
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(24,32,26,.05);
+}
+/* single-row pill search bar */
+.search-bar{
+  max-width:1100px;margin:0 auto;
+  background:var(--cream);border-radius:50px;
+  box-shadow:0 4px 24px rgba(24,32,26,.10);
+  border:1.5px solid var(--gray-light);
+  display:flex;align-items:center;
+  padding:5px 5px 5px 6px;
+  gap:0;
+}
+.sf{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 18px;flex:1;min-width:0;
+  border-right:1px solid var(--gray-light);
+}
+.sf:last-of-type{border-right:none;}
+.sf-icon{font-size:1rem;flex-shrink:0;}
+.sf-inner{display:flex;flex-direction:column;gap:1px;min-width:0;width:100%;}
+.sf-lbl{font-size:.58rem;font-weight:800;color:var(--g-dark);text-transform:uppercase;letter-spacing:.09em;line-height:1;}
+.sf-input{border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;color:var(--charcoal);width:100%;}
+.sf-input::placeholder{color:var(--gray-mid);}
+.sf-select{border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;color:var(--charcoal);width:100%;cursor:pointer;-webkit-appearance:none;}
+.sf-date{border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;color:var(--charcoal);width:100%;cursor:pointer;}
+.sf-date::-webkit-calendar-picker-indicator{opacity:.45;cursor:pointer;}
+.nights-chip{
+  display:none;align-items:center;gap:5px;
+  background:var(--g-pale);border:1px solid var(--g-light);
+  color:var(--g-dark);font-size:.75rem;font-weight:700;
+  padding:4px 12px;border-radius:50px;white-space:nowrap;flex-shrink:0;
+  margin:0 6px;
+}
+.nights-chip.show{display:flex;}
+.search-go{
+  background:var(--g);color:white;border:none;border-radius:50px;
+  padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  box-shadow:var(--shadow-g);transition:all .22s;white-space:nowrap;flex-shrink:0;
+}
+.search-go:hover{background:var(--g-dark);transform:translateY(-1px);}
+
+/* ── LISTINGS SECTION ── */
+.listings-section{padding:28px 40px 64px;}
+.listings-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:12px;
+}
+.listings-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:800;color:var(--charcoal);}
+.listings-sub{font-size:.78rem;color:var(--gray);margin-top:2px;}
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;}
+.fbtn{
+  background:white;border:1.5px solid var(--gray-light);
+  color:var(--gray);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;
+  padding:7px 15px;border-radius:50px;cursor:pointer;transition:all .2s;
+}
+.fbtn:hover,.fbtn.active{background:var(--g-pale);border-color:var(--g-light);color:var(--g-dark);}
+
+/* trip bar (shown after search) */
+.trip-bar{
+  display:none;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:20px;padding:11px 18px;
+  background:white;border-radius:12px;border:1px solid var(--gray-light);
+  font-size:.82rem;
+}
+.trip-bar.show{display:flex;}
+.tp{display:flex;align-items:center;gap:5px;background:var(--g-pale);border:1px solid var(--g-light);color:var(--g-dark);font-weight:600;font-size:.77rem;padding:4px 11px;border-radius:50px;}
+.mod-btn{margin-left:auto;background:none;border:1.5px solid var(--gray-light);color:var(--gray);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;padding:5px 12px;border-radius:50px;cursor:pointer;transition:all .2s;}
+.mod-btn:hover{border-color:var(--g);color:var(--g-dark);}
+
+/* ── GRID — 4 columns on large screens ── */
+.listings-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+@media(max-width:1200px){.listings-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:860px){.listings-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.listings-grid{grid-template-columns:1fr;}}
+
+/* ── CARD ── */
+.listing-card{background:white;border-radius:var(--r);overflow:hidden;box-shadow:0 2px 14px rgba(24,32,26,.07);transition:all .28s;cursor:pointer;border:1.5px solid transparent;}
+.listing-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-g);border-color:var(--g-light);}
+.lc-img{height:180px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.lc-emoji{position:relative;z-index:1;}
+.lc-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.18));}
+.lc-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px;z-index:2;}
+.badge{font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:50px;}
+.bs{background:var(--g);color:white;}
+.bn{background:var(--charcoal);color:white;}
+.bh{background:#e84d3d;color:white;}
+.lc-fav{position:absolute;top:10px;right:10px;z-index:2;width:29px;height:29px;background:white;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:transform .18s;box-shadow:0 2px 7px rgba(0,0,0,.12);}
+.lc-fav:hover{transform:scale(1.2);}
+.lc-body{padding:13px 15px 15px;}
+.lc-loc{font-size:.67rem;font-weight:700;color:var(--g-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.lc-name{font-family:'Playfair Display',serif;font-size:.97rem;font-weight:700;color:var(--charcoal);margin-bottom:8px;line-height:1.25;}
+.lc-feats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.lc-feat{font-size:.7rem;color:var(--gray);background:var(--cream);padding:2px 7px;border-radius:50px;}
+.lc-foot{display:flex;align-items:flex-end;justify-content:space-between;padding-top:10px;border-top:1px solid var(--gray-light);}
+.lc-price{font-weight:700;font-size:.94rem;color:var(--charcoal);line-height:1.2;}
+.lc-price span{font-weight:400;font-size:.74rem;color:var(--gray);}
+.lc-total{font-size:.69rem;color:var(--g-dark);font-weight:600;margin-top:1px;}
+.lc-rating{display:flex;align-items:center;gap:3px;font-size:.76rem;font-weight:600;}
+.lc-rev{color:var(--gray);font-weight:400;}
+
+/* no results */
+.no-results{grid-column:1/-1;text-align:center;padding:52px 20px;}
+.no-results .ni{font-size:2.8rem;margin-bottom:12px;}
+.no-results h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:7px;}
+.no-results p{color:var(--gray);font-size:.85rem;}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .55s,transform .55s;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.48);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:var(--r-lg);max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 72px rgba(0,0,0,.22);animation:mIn .28s cubic-bezier(.34,1.2,.64,1) both;}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(12px);}to{opacity:1;transform:none;}}
+.m-img{height:240px;display:flex;align-items:center;justify-content:center;font-size:4.5rem;position:relative;}
+.m-close{position:absolute;top:13px;right:13px;width:32px;height:32px;background:white;border-radius:50%;border:none;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.13);z-index:1;}
+.m-close:hover{transform:scale(1.1);}
+.m-body{padding:22px 26px 30px;}
+.m-loc{font-size:.67rem;font-weight:700;color:var(--g-dark);letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
+.m-name{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:800;margin-bottom:9px;}
+.m-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.m-rating{font-weight:600;font-size:.86rem;}
+.m-reviews{color:var(--gray);font-size:.8rem;}
+.m-super{background:var(--g);color:white;font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:50px;}
+.m-dates{background:var(--g-pale);border:1px solid var(--g-light);border-radius:11px;padding:11px 15px;margin-bottom:14px;display:none;align-items:center;gap:14px;flex-wrap:wrap;font-size:.82rem;}
+.m-dates.show{display:flex;}
+.mdi{display:flex;flex-direction:column;gap:1px;}
+.mdi-l{font-size:.6rem;font-weight:800;color:var(--g-deep);text-transform:uppercase;letter-spacing:.07em;}
+.mdi-v{font-weight:700;color:var(--charcoal);}
+.mdiv{width:1px;height:24px;background:var(--g-light);}
+.m-host{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--cream);border-radius:11px;margin-bottom:13px;}
+.h-av{width:38px;height:38px;border-radius:50%;background:var(--g);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.88rem;flex-shrink:0;}
+.h-name{font-weight:700;font-size:.84rem;}
+.h-tag{font-size:.7rem;color:var(--g-dark);font-weight:600;}
+.h-joined{font-size:.68rem;color:var(--gray);}
+.m-desc{color:var(--gray);font-size:.84rem;line-height:1.72;margin-bottom:16px;}
+.m-feats-title{font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px;color:var(--charcoal);}
+.m-feats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.m-feat{background:var(--cream);border:1px solid var(--gray-light);border-radius:50px;padding:4px 11px;font-size:.75rem;}
+.m-foot{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:16px;border-top:1px solid var(--gray-light);}
+.m-price-wrap{}
+.m-price{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:800;color:var(--charcoal);}
+.m-price span{font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:400;color:var(--gray);}
+.m-total{font-size:.76rem;color:var(--g-dark);font-weight:600;margin-top:2px;}
+.m-book{background:var(--g);color:white;padding:12px 26px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;border:none;cursor:pointer;box-shadow:var(--shadow-g);transition:all .22s;}
+.m-book:hover{background:var(--g-dark);transform:translateY(-1px);}
+
+/* ── HOST PAGE ── */
+.host-page{background:var(--cream);min-height:100vh;padding:96px 40px 76px;}
+.host-hero{background:var(--charcoal);border-radius:var(--r-lg);padding:48px 44px;margin-bottom:40px;position:relative;overflow:hidden;text-align:center;}
+.host-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 50%,rgba(106,191,75,.17) 0%,transparent 65%);}
+.host-hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;color:white;margin-bottom:11px;position:relative;z-index:1;}
+.host-hero h1 em{font-style:normal;color:var(--g);}
+.host-hero p{color:rgba(255,255,255,.58);font-size:.91rem;line-height:1.68;max-width:480px;margin:0 auto 22px;position:relative;z-index:1;}
+.host-perks{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1;}
+.host-perk{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.72);font-size:.8rem;}
+.hp-dot{width:6px;height:6px;background:var(--g);border-radius:50%;flex-shrink:0;}
+.form-container{max-width:760px;margin:0 auto;}
+.form-card{background:white;border-radius:var(--r-lg);padding:40px;box-shadow:var(--shadow);border:1.5px solid var(--gray-light);}
+.form-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.form-sub{color:var(--gray);font-size:.85rem;margin-bottom:28px;}
+.fsec{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g-dark);margin:24px 0 12px;padding-top:18px;border-top:1px solid var(--gray-light);}
+.fsec:first-of-type{margin-top:0;padding-top:0;border-top:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-row.full{grid-template-columns:1fr;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:.74rem;font-weight:700;color:var(--charcoal);}
+.fg input,.fg select,.fg textarea{border:1.5px solid var(--gray-light);border-radius:9px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:.86rem;color:var(--charcoal);background:var(--cream);outline:none;transition:border-color .2s,box-shadow .2s;}
+.fg textarea{resize:vertical;min-height:82px;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(106,191,75,.1);background:white;}
+.amenities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:7px;}
+.am-toggle{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:9px;border:1.5px solid var(--gray-light);cursor:pointer;font-size:.77rem;font-weight:500;color:var(--gray);transition:all .2s;user-select:none;}
+.am-toggle input{display:none;}
+.am-toggle:has(input:checked){background:var(--g-pale);border-color:var(--g-light);color:var(--g-dark);}
+.photo-drop{border:2px dashed var(--gray-light);border-radius:var(--r);padding:30px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream);}
+.photo-drop:hover{border-color:var(--g);background:var(--g-pale);}
+.photo-drop p{color:var(--gray);font-size:.82rem;}
+.photo-drop strong{color:var(--g-dark);}
+.form-actions{display:flex;align-items:center;justify-content:flex-end;gap:11px;margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-light);}
+.btn-primary{background:var(--g);color:white;padding:12px 26px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:var(--shadow-g);transition:all .22s;}
+.btn-primary:hover{background:var(--g-dark);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--charcoal);padding:12px 20px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;border:1.5px solid var(--gray-light);cursor:pointer;transition:all .22s;}
+.btn-ghost:hover{border-color:var(--g);color:var(--g-dark);background:var(--g-pale);}
+.success-banner{display:none;background:var(--g-pale);border:1.5px solid var(--g-light);border-radius:var(--r);padding:26px;text-align:center;margin-bottom:18px;}
+.success-banner.show{display:block;animation:fadeUp .4s ease;}
+.success-banner h3{font-family:'Playfair Display',serif;font-size:1.15rem;margin:9px 0 5px;}
+.success-banner p{color:var(--gray);font-size:.83rem;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--charcoal2);padding:26px 40px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  border-top:3px solid var(--g);
+}
+.f-brand{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:800;color:white;}
+.f-brand .gr{color:var(--g);}
+
+.f-contact{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.f-item{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.62);font-size:.83rem;text-decoration:none;transition:color .2s;}
+.f-item:hover{color:var(--g-light);}
+.f-ico{width:28px;height:28px;background:rgba(255,255,255,.07);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+.f-copy{color:rgba(255,255,255,.27);font-size:.72rem;width:100%;text-align:center;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .search-bar{flex-wrap:wrap;border-radius:var(--r-lg);padding:10px;}
+  .sf{border-right:none;border-bottom:1px solid var(--gray-light);padding:9px 12px;}
+  .sf:last-of-type{border-bottom:none;}
+  .search-go{width:100%;justify-content:center;border-radius:12px;}
+  .nights-chip{margin:4px 0;}
+}
+@media(max-width:700px){
+  nav{padding:12px 18px;}
+  .nav-links{display:none;flex-direction:column;position:fixed;top:57px;left:0;right:0;background:white;padding:16px 20px;border-bottom:1px solid var(--gray-light);gap:12px;box-shadow:var(--shadow);}
+  .nav-links.open{display:flex;}
+  .hamburger{display:flex;}
+  .search-strip{padding:62px 16px 14px;}
+  .listings-section{padding:20px 16px 52px;}
+  .host-page{padding:82px 16px 48px;}
+  .host-hero{padding:30px 18px;}
+  .form-card{padding:20px 15px;}
+  .form-row{grid-template-columns:1fr;}
+  footer{padding:20px 18px;flex-direction:column;align-items:flex-start;}
+  .f-contact{flex-direction:column;gap:9px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="logo" onclick="showPage('home')">
+    <div class="logo-icon">🏡</div>
+    <span class="logo-text">Bnb<span class="gr">Superhosts</span></span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a onclick="showPage('home')">Browse Stays</a></li>
+    <li><a onclick="showPage('host')" class="nav-host-btn">List Your Property</a></li>
+  </ul>
+  <button class="hamburger" id="menuToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ══════════ HOME PAGE ══════════ -->
+<div class="page active" id="page-home">
+
+  <!-- COMPACT SEARCH STRIP -->
+  <div class="search-strip">
+    <div class="search-bar">
+      <div class="sf">
+        <span class="sf-icon">📍</span>
+        <div class="sf-inner">
+          <span class="sf-lbl">Location</span>
+          <input class="sf-input" id="searchLocation" type="text" placeholder="City or neighbourhood…" oninput="liveFilter()">
+        </div>
+      </div>
+      <div class="sf">
+        <span class="sf-icon">🏠</span>
+        <div class="sf-inner">
+          <span class="sf-lbl">Unit Size</span>
+          <select class="sf-select" id="searchSize" onchange="liveFilter()">
+            <option value="">Any size</option>
+            <option value="1">Studio / 1 Bed</option>
+            <option value="2">2 Bedrooms</option>
+            <option value="3">3 Bedrooms</option>
+            <option value="4">4+ Bedrooms</option>
+          </select>
+        </div>
+      </div>
+      <div class="sf">
+        <span class="sf-icon">👥</span>
+        <div class="sf-inner">
+          <span class="sf-lbl">Guests</span>
+          <select class="sf-select" id="searchGuests" onchange="liveFilter()">
+            <option value="">Any</option>
+            <option value="2">Up to 2</option>
+            <option value="4">Up to 4</option>
+            <option value="6">Up to 6</option>
+            <option value="8">8+</option>
+          </select>
+        </div>
+      </div>
+      <div class="sf">
+        <span class="sf-icon">📅</span>
+        <div class="sf-inner">
+          <span class="sf-lbl">Check-in</span>
+          <input class="sf-date" id="checkIn" type="date" onchange="onDateChange()">
+        </div>
+      </div>
+      <div class="sf">
+        <span class="sf-icon">📅</span>
+        <div class="sf-inner">
+          <span class="sf-lbl">Check-out</span>
+          <input class="sf-date" id="checkOut" type="date" onchange="onDateChange()">
+        </div>
+      </div>
+      <div class="nights-chip" id="nightsChip">🌙 <span id="nightsNum">0</span>n</div>
+      <button class="search-go" onclick="doSearch()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search
+      </button>
+    </div>
+  </div>
+
+  <!-- LISTINGS — visible immediately -->
+  <section class="listings-section" id="listingsSection">
+    <div class="listings-header">
+      <div>
+        <div class="listings-title" id="listingsTitle">Available Units</div>
+        <div class="listings-sub" id="listingsSub">Browse our curated properties</div>
+      </div>
+      <div class="filter-row">
+        <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+        <button class="fbtn" onclick="setFilter('superhost',this)">⭐ Superhost</button>
+        <button class="fbtn" onclick="setFilter('entire',this)">🏠 Entire Home</button>
+        <button class="fbtn" onclick="setFilter('apartment',this)">🏢 Apartment</button>
+        <button class="fbtn" onclick="setFilter('villa',this)">🌿 Villa</button>
+      </div>
+    </div>
+
+    <!-- Trip bar (shown after date search) -->
+    <div class="trip-bar" id="tripBar"></div>
+
+    <div class="listings-grid" id="listingsGrid"></div>
+  </section>
+
+</div>
+
+<!-- ══════════ HOST PAGE ══════════ -->
+<div class="page" id="page-host">
+  <div class="host-page">
+    <div class="host-hero">
+      <h1>List Your Property &<br><em>Start Earning</em></h1>
+      <p>Join 1,200+ hosts who trust BnbSuperhosts. Our team will be in touch within 24 hours.</p>
+      <div class="host-perks">
+        <div class="host-perk"><div class="hp-dot"></div>Free photography</div>
+        <div class="host-perk"><div class="hp-dot"></div>Full management</div>
+        <div class="host-perk"><div class="hp-dot"></div>Dynamic pricing</div>
+        <div class="host-perk"><div class="hp-dot"></div>24/7 support</div>
+      </div>
+    </div>
+    <div class="form-container">
+      <div class="success-banner" id="successBanner">
+        <div style="font-size:2rem">🎉</div>
+        <h3>Listing submitted!</h3>
+        <p>We'll review your property and reach out within 24 hours.</p>
+      </div>
+      <div class="form-card" id="listingForm">
+        <h2 class="form-title">Property Details</h2>
+        <p class="form-sub">Tell us about your space and we'll take it from there.</p>
+        <div class="fsec">Your Information</div>
+        <div class="form-row">
+          <div class="fg"><label>First Name *</label><input type="text" id="f_fname" placeholder="e.g. Amara"></div>
+          <div class="fg"><label>Last Name *</label><input type="text" id="f_lname" placeholder="e.g. Mwangi"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Email *</label><input type="email" id="f_email" placeholder="you@example.com"></div>
+          <div class="fg"><label>Phone *</label><input type="tel" id="f_phone" placeholder="+254 700 000 000"></div>
+        </div>
+        <div class="fsec">Property Information</div>
+        <div class="form-row full">
+          <div class="fg"><label>Property Title *</label><input type="text" id="f_title" placeholder="e.g. Serene Garden Retreat in Karen"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Type *</label>
+            <select id="f_type"><option value="">Select…</option><option>Entire Home</option><option>Apartment</option><option>Villa</option><option>Studio</option><option>Townhouse</option><option>Cottage</option></select>
+          </div>
+          <div class="fg"><label>Location *</label><input type="text" id="f_location" placeholder="e.g. Karen, Nairobi"></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Bedrooms *</label>
+            <select id="f_beds"><option value="">Select…</option><option>Studio</option><option>1 Bedroom</option><option>2 Bedrooms</option><option>3 Bedrooms</option><option>4 Bedrooms</option><option>5+</option></select>
+          </div>
+          <div class="fg"><label>Nightly Rate (USD)</label><input type="number" placeholder="e.g. 150" min="0"></div>
+        </div>
+        <div class="fsec">Description</div>
+        <div class="form-row full">
+          <div class="fg"><label>Describe your property</label>
+            <textarea placeholder="What makes your space special — views, atmosphere, nearby attractions…"></textarea>
+          </div>
+        </div>
+        <div class="fsec">Amenities</div>
+        <div class="amenities-grid">
+          <label class="am-toggle"><input type="checkbox">📶 WiFi</label>
+          <label class="am-toggle"><input type="checkbox">🏊 Pool</label>
+          <label class="am-toggle"><input type="checkbox">🚗 Parking</label>
+          <label class="am-toggle"><input type="checkbox">❄️ AC</label>
+          <label class="am-toggle"><input type="checkbox">🍳 Kitchen</label>
+          <label class="am-toggle"><input type="checkbox">📺 Smart TV</label>
+          <label class="am-toggle"><input type="checkbox">🌿 Garden</label>
+          <label class="am-toggle"><input type="checkbox">🔒 Security</label>
+          <label class="am-toggle"><input type="checkbox">🏋️ Gym</label>
+          <label class="am-toggle"><input type="checkbox">💻 Workspace</label>
+          <label class="am-toggle"><input type="checkbox">🔥 BBQ</label>
+          <label class="am-toggle"><input type="checkbox">🐾 Pets OK</label>
+        </div>
+        <div class="fsec">Photos</div>
+        <div class="photo-drop" onclick="document.getElementById('photoUpload').click()">
+          <div style="font-size:1.9rem;margin-bottom:7px">📷</div>
+          <p><strong>Click to upload photos</strong></p>
+          <p style="font-size:.72rem;margin-top:3px;color:var(--gray-mid)">JPG, PNG · up to 20 photos</p>
+          <input type="file" id="photoUpload" accept="image/*" multiple style="display:none" onchange="handlePhotos(this)">
+        </div>
+        <div id="photoPreview" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;"></div>
+        <div class="form-actions">
+          <button class="btn-ghost" onclick="showPage('home')">← Back</button>
+          <button class="btn-primary" onclick="submitListing()">
+            Submit Property
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-brand">
+    <div class="logo-icon" style="width:28px;height:28px;font-size:.85rem;">🏡</div>
+    <span class="logo-text">Bnb<span class="gr">Superhosts</span></span>
+  </div>
+  <div class="f-contact">
+    <a class="f-item" href="tel:+254700000000"><div class="f-ico">📞</div>+254 700 000 000</a>
+    <a class="f-item" href="mailto:hello@bnbsuperhosts.com"><div class="f-ico">✉️</div>hello@bnbsuperhosts.com</a>
+  </div>
+  <div class="f-copy">© 2025 BnbSuperhosts. All rights reserved.</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="m-img" id="mImg"><button class="m-close" onclick="closeModalDirect()">✕</button></div>
+    <div class="m-body">
+      <div class="m-loc" id="mLoc"></div>
+      <div class="m-name" id="mName"></div>
+      <div class="m-meta" id="mMeta"></div>
+      <div class="m-dates" id="mDates"></div>
+      <div class="m-host" id="mHost"></div>
+      <p class="m-desc" id="mDesc"></p>
+      <div class="m-feats-title">What's Included</div>
+      <div class="m-feats" id="mFeats"></div>
+      <div class="m-foot">
+        <div class="m-price-wrap">
+          <div class="m-price" id="mPrice"></div>
+          <div class="m-total" id="mTotal"></div>
+        </div>
+        <button class="m-book" onclick="bookNow()">Reserve Now →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_LISTINGS = [
+  {id:1,name:"Serene Garden Retreat",loc:"Karen, Nairobi",beds:3,baths:2,guests:6,price:145,rating:4.98,reviews:312,type:"entire",superhost:true,emoji:"🏡",bg:"linear-gradient(135deg,#d4edcb,#a8d98f)",desc:"A tranquil oasis in Karen's leafy suburbs. Lush private garden, open-plan living and warm interiors that feel like home.",feats:["🛏 3 Bedrooms","🚿 2 Bathrooms","👥 6 guests","🌿 Garden","📶 WiFi","🚗 Parking","🏊 Pool"],host:"Amara M.",hi:"AM",joined:"Host since 2021"},
+  {id:2,name:"Modern City Penthouse",loc:"Westlands, Nairobi",beds:2,baths:2,guests:4,price:195,rating:4.97,reviews:189,type:"apartment",superhost:true,emoji:"🌇",bg:"linear-gradient(135deg,#c5deb8,#7cb55c)",desc:"Sleek penthouse with panoramic city views from the 18th floor. Perfect for business travellers and couples.",feats:["🛏 2 Bedrooms","🚿 2 Bathrooms","👥 4 guests","🌆 City Views","📶 Gigabit WiFi","❄️ AC","💻 Workspace"],host:"James K.",hi:"JK",joined:"Host since 2020"},
+  {id:3,name:"Safari-Style Villa",loc:"Gigiri, Nairobi",beds:4,baths:3,guests:8,price:280,rating:5.0,reviews:97,type:"villa",superhost:true,emoji:"🦁",bg:"linear-gradient(135deg,#b8e0a0,#6aab48)",desc:"Stunning 4-bedroom villa with teak furniture, earthy tones and a wraparound deck overlooking the garden.",feats:["🛏 4 Bedrooms","🚿 3 Bathrooms","👥 8 guests","🌿 Deck","🔒 Security","🍳 Chef's Kitchen","🚗 Parking"],host:"Fatima O.",hi:"FO",joined:"Host since 2019"},
+  {id:4,name:"Beachfront Bungalow",loc:"Nyali, Mombasa",beds:2,baths:1,guests:4,price:165,rating:4.95,reviews:241,type:"entire",superhost:true,emoji:"🏖️",bg:"linear-gradient(135deg,#d4edcb,#9dd47a)",desc:"Wake up to ocean waves. Direct beach access, sea breeze and breathtaking Indian Ocean sunsets.",feats:["🛏 2 Bedrooms","🚿 1 Bathroom","👥 4 guests","🌊 Beach Access","🌅 Ocean Views","🍹 Outdoor Bar","📶 WiFi"],host:"Omar H.",hi:"OH",joined:"Host since 2022"},
+  {id:5,name:"Cosy Studio Loft",loc:"Kilimani, Nairobi",beds:1,baths:1,guests:2,price:75,rating:4.93,reviews:408,type:"apartment",superhost:false,isNew:true,emoji:"☕",bg:"linear-gradient(135deg,#e2f5d8,#b0d98a)",desc:"Thoughtfully designed studio loft. Floor-to-ceiling windows flooding the space with natural light all day.",feats:["🛏 1 Queen Bed","🚿 1 Bathroom","👥 2 guests","☀️ Big windows","📶 WiFi","❄️ AC","🏋️ Gym"],host:"Priya N.",hi:"PN",joined:"Host since 2023"},
+  {id:6,name:"Lavington Family Home",loc:"Lavington, Nairobi",beds:3,baths:2,guests:7,price:210,rating:4.96,reviews:155,type:"entire",superhost:true,emoji:"🌳",bg:"linear-gradient(135deg,#c8e6b0,#7dc95a)",desc:"Spacious family home on a quiet cul-de-sac. Generous outdoor space and a well-equipped kitchen.",feats:["🛏 3 Bedrooms","🚿 2 Bathrooms","👥 7 guests","🌳 Garden","🍳 Kitchen","🚗 Driveway","🔒 Gated"],host:"Samuel W.",hi:"SW",joined:"Host since 2020"},
+  {id:7,name:"Minimalist Studio Haven",loc:"Kileleshwa, Nairobi",beds:1,baths:1,guests:2,price:85,rating:4.91,reviews:307,type:"apartment",superhost:false,isNew:true,emoji:"🪴",bg:"linear-gradient(135deg,#d8f0c8,#95c870)",desc:"Beautifully curated minimal studio. Neutral tones, quality linens — feels like a boutique hotel.",feats:["🛏 King Bed","🚿 1 Bathroom","👥 2 guests","🪴 Balcony","📶 WiFi","📺 Smart TV","☕ Espresso"],host:"Grace A.",hi:"GA",joined:"Host since 2023"},
+  {id:8,name:"Runda Luxury Estate",loc:"Runda, Nairobi",beds:5,baths:4,guests:10,price:450,rating:5.0,reviews:62,type:"villa",superhost:true,isHot:true,emoji:"👑",bg:"linear-gradient(135deg,#b5dda0,#5fa83a)",desc:"The pinnacle of Nairobi luxury — heated pool, home theatre, private gym and an optional private chef.",feats:["🛏 5 Bedrooms","🚿 4 Bathrooms","👥 10 guests","🏊 Heated Pool","🎬 Home Theatre","🏋️ Gym","👨‍🍳 Chef"],host:"Diana C.",hi:"DC",joined:"Host since 2018"},
+  {id:9,name:"Diani Beach House",loc:"Diani, Mombasa",beds:3,baths:2,guests:6,price:220,rating:4.94,reviews:178,type:"entire",superhost:true,emoji:"🌴",bg:"linear-gradient(135deg,#cde8b8,#88c562)",desc:"Coral stone beach house in tropical gardens, steps from Diani's world-famous white sand beach.",feats:["🛏 3 Bedrooms","🚿 2 Bathrooms","👥 6 guests","🌴 Garden","🌊 100m to Beach","🏄 Surf Rental","📶 WiFi"],host:"Alex M.",hi:"AM",joined:"Host since 2021"},
+];
+
+let currentFilter = 'all';
+let currentNights = 0;
+let tripDates = {};
+
+/* ── DATE HANDLING ── */
+function onDateChange() {
+  const ci = document.getElementById('checkIn').value;
+  const co = document.getElementById('checkOut').value;
+  const chip = document.getElementById('nightsChip');
+  if (ci && co) {
+    const diff = Math.round((new Date(co) - new Date(ci)) / 86400000);
+    if (diff > 0) {
+      currentNights = diff;
+      document.getElementById('nightsNum').textContent = diff;
+      chip.classList.add('show');
+    } else {
+      currentNights = 0;
+      chip.classList.remove('show');
+    }
+  } else {
+    currentNights = 0;
+    chip.classList.remove('show');
+  }
+  // live update listings if already searched
+  if (tripDates.checkIn) liveFilter();
+}
+
+/* ── SEARCH (dates required) ── */
+function doSearch() {
+  const ci = document.getElementById('checkIn').value;
+  const co = document.getElementById('checkOut').value;
+  if (!ci || !co || currentNights <= 0) {
+    alert('Please select valid check-in and check-out dates.');
+    return;
+  }
+  tripDates = { checkIn: ci, checkOut: co, nights: currentNights };
+  renderListings(getFiltered());
+  updateTripBar();
+  document.getElementById('listingsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ── LIVE FILTER (location/size/guests, no dates required) ── */
+function liveFilter() {
+  renderListings(getFiltered());
+}
+
+function setFilter(type, btn) {
+  currentFilter = type;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderListings(getFiltered());
+}
+
+function getFiltered() {
+  const loc = document.getElementById('searchLocation').value.toLowerCase().trim();
+  const size = document.getElementById('searchSize').value;
+  const guests = parseInt(document.getElementById('searchGuests').value) || 0;
+  return ALL_LISTINGS.filter(l => {
+    if (loc && !l.loc.toLowerCase().includes(loc) && !l.name.toLowerCase().includes(loc)) return false;
+    if (size === '1' && l.beds > 1) return false;
+    if (size === '2' && l.beds !== 2) return false;
+    if (size === '3' && l.beds !== 3) return false;
+    if (size === '4' && l.beds < 4) return false;
+    if (guests && l.guests < guests) return false;
+    if (currentFilter === 'superhost' && !l.superhost) return false;
+    if (currentFilter === 'entire' && l.type !== 'entire') return false;
+    if (currentFilter === 'apartment' && l.type !== 'apartment') return false;
+    if (currentFilter === 'villa' && l.type !== 'villa') return false;
+    return true;
+  });
+}
+
+/* ── RENDER ── */
+function renderListings(arr) {
+  const nights = tripDates.nights || 0;
+  document.getElementById('listingsTitle').textContent = arr.length + ' Unit' + (arr.length !== 1 ? 's' : '') + ' Available';
+  document.getElementById('listingsSub').textContent = tripDates.checkIn
+    ? `${formatDate(tripDates.checkIn)} → ${formatDate(tripDates.checkOut)} · ${nights} night${nights !== 1 ? 's' : ''}`
+    : 'Browse our curated properties — add dates to see pricing totals';
+
+  const grid = document.getElementById('listingsGrid');
+  if (!arr.length) {
+    grid.innerHTML = `<div class="no-results"><div class="ni">🔍</div><h3>No units found</h3><p>Try a different location, size or dates.</p></div>`;
+    return;
+  }
+  grid.innerHTML = arr.map((l, i) => {
+    const total = nights > 0 ? `<div class="lc-total">$${(l.price * nights).toLocaleString()} total · ${nights} nights</div>` : '';
+    return `
+    <div class="listing-card reveal" style="transition-delay:${i * 45}ms" onclick="openModal(${l.id})">
+      <div class="lc-img" style="background:${l.bg}">
+        <span class="lc-emoji">${l.emoji}</span>
+        <div class="lc-ov"></div>
+        <div class="lc-badges">
+          ${l.superhost ? '<span class="badge bs">⭐ Superhost</span>' : ''}
+          ${l.isNew ? '<span class="badge bn">✨ New</span>' : ''}
+          ${l.isHot ? '<span class="badge bh">🔥 Hot</span>' : ''}
+        </div>
+        <button class="lc-fav" onclick="event.stopPropagation();favToggle(this)">🤍</button>
+      </div>
+      <div class="lc-body">
+        <div class="lc-loc">📍 ${l.loc}</div>
+        <div class="lc-name">${l.name}</div>
+        <div class="lc-feats">
+          <span class="lc-feat">🛏 ${l.beds} bed${l.beds > 1 ? 's' : ''}</span>
+          <span class="lc-feat">🚿 ${l.baths} bath${l.baths > 1 ? 's' : ''}</span>
+          <span class="lc-feat">👥 ${l.guests}</span>
+        </div>
+        <div class="lc-foot">
+          <div>
+            <div class="lc-price">$${l.price} <span>/ night</span></div>
+            ${total}
+          </div>
+          <div class="lc-rating">⭐ ${l.rating} <span class="lc-rev">· ${l.reviews}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(() => document.querySelectorAll('#listingsGrid .reveal').forEach(el => ro.observe(el)), 30);
+}
+
+function updateTripBar() {
+  const bar = document.getElementById('tripBar');
+  if (!tripDates.checkIn) { bar.classList.remove('show'); return; }
+  const {checkIn, checkOut, nights} = tripDates;
+  bar.classList.add('show');
+  bar.innerHTML = `
+    <span class="tp">📅 ${formatDate(checkIn)}</span>
+    →
+    <span class="tp">📅 ${formatDate(checkOut)}</span>
+    <span class="tp">🌙 ${nights} night${nights !== 1 ? 's' : ''}</span>
+    <button class="mod-btn" onclick="clearDates()">✕ Clear dates</button>`;
+}
+
+function clearDates() {
+  document.getElementById('checkIn').value = '';
+  document.getElementById('checkOut').value = '';
+  document.getElementById('nightsChip').classList.remove('show');
+  currentNights = 0;
+  tripDates = {};
+  document.getElementById('tripBar').classList.remove('show');
+  renderListings(getFiltered());
+}
+
+/* ── MODAL ── */
+function openModal(id) {
+  const l = ALL_LISTINGS.find(x => x.id === id);
+  const img = document.getElementById('mImg');
+  img.style.background = l.bg;
+  const ex = img.querySelector('.me'); if (ex) ex.remove();
+  const sp = document.createElement('span');
+  sp.className = 'me'; sp.style.cssText = 'font-size:3.8rem;position:relative;z-index:1;';
+  sp.textContent = l.emoji; img.appendChild(sp);
+
+  document.getElementById('mLoc').innerHTML = '📍 ' + l.loc;
+  document.getElementById('mName').textContent = l.name;
+  document.getElementById('mMeta').innerHTML = `
+    <span class="m-rating">⭐ ${l.rating}</span>
+    <span class="m-reviews">${l.reviews} reviews</span>
+    ${l.superhost ? '<span class="m-super">⭐ Superhost</span>' : ''}`;
+
+  const md = document.getElementById('mDates');
+  if (tripDates.checkIn) {
+    md.classList.add('show');
+    md.innerHTML = `
+      <div class="mdi"><div class="mdi-l">Check-in</div><div class="mdi-v">${formatDate(tripDates.checkIn)}</div></div>
+      <div class="mdiv"></div>
+      <div class="mdi"><div class="mdi-l">Check-out</div><div class="mdi-v">${formatDate(tripDates.checkOut)}</div></div>
+      <div class="mdiv"></div>
+      <div class="mdi"><div class="mdi-l">Duration</div><div class="mdi-v">${tripDates.nights} night${tripDates.nights !== 1 ? 's' : ''}</div></div>`;
+  } else { md.classList.remove('show'); }
+
+  document.getElementById('mHost').innerHTML = `
+    <div class="h-av">${l.hi}</div>
+    <div><div class="h-name">Hosted by ${l.host}</div>
+    <div class="h-tag">✅ Verified Superhost</div>
+    <div class="h-joined">${l.joined}</div></div>`;
+  document.getElementById('mDesc').textContent = l.desc;
+  document.getElementById('mFeats').innerHTML = l.feats.map(f => `<span class="m-feat">${f}</span>`).join('');
+  document.getElementById('mPrice').innerHTML = `$${l.price} <span>/ night</span>`;
+  document.getElementById('mTotal').textContent = tripDates.nights
+    ? `$${(l.price * tripDates.nights).toLocaleString()} total for ${tripDates.nights} nights` : '';
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+function bookNow() { closeModalDirect(); alert('Booking confirmed! We\'ll send a confirmation to your email.\n\nTo connect a live booking system: hello@bnbsuperhosts.com'); }
+
+/* ── HELPERS ── */
+function formatDate(s) {
+  if (!s) return '';
+  return new Date(s + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function favToggle(btn) { btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍'; btn.style.transform = 'scale(1.3)'; setTimeout(() => btn.style.transform = '', 200); }
+
+/* ── PAGES ── */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  navLinks.classList.remove('open');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── HOST FORM ── */
+function submitListing() {
+  const req = ['f_fname','f_lname','f_email','f_phone','f_title','f_type','f_location','f_beds'];
+  let ok = true;
+  req.forEach(id => { const el = document.getElementById(id); if (!el.value.trim()) { el.style.borderColor='#e84d3d'; ok=false; setTimeout(()=>el.style.borderColor='',2500); } });
+  if (!ok) { alert('Please fill in all required fields.'); return; }
+  document.getElementById('listingForm').style.opacity = '0.4';
+  document.getElementById('listingForm').style.pointerEvents = 'none';
+  setTimeout(() => { document.getElementById('successBanner').classList.add('show'); document.getElementById('listingForm').style.display='none'; window.scrollTo({top:0,behavior:'smooth'}); }, 700);
+}
+function handlePhotos(input) {
+  const p = document.getElementById('photoPreview');
+  Array.from(input.files).slice(0,8).forEach(f => { const r=new FileReader(); r.onload=e=>{const d=document.createElement('div');d.style.cssText='width:68px;height:68px;border-radius:7px;overflow:hidden;border:2px solid var(--g-light);flex-shrink:0;';d.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;p.appendChild(d);}; r.readAsDataURL(f); });
+}
+
+/* ── NAV ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 30));
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+menuToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+/* ── REVEAL ── */
+const ro = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => { if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 50); ro.unobserve(e.target); } });
+}, { threshold: 0.06 });
+
+/* ── DATE CONSTRAINTS ── */
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('checkIn').min = today;
+document.getElementById('checkOut').min = today;
+document.getElementById('checkIn').addEventListener('change', function () { document.getElementById('checkOut').min = this.value; });
+
+/* ── INIT: show all 9 units immediately ── */
+renderListings(ALL_LISTINGS);
+</script>
+</body>
+</html>
